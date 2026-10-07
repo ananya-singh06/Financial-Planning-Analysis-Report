@@ -1,0 +1,16 @@
+EmployeeKey,EmployeeName,JobTitle,Email,ManagerKey,DepartmentKey
+1,Aarav Mehta,CEO,aarav.mehta@example.com,,6
+2,Priya Nair,CFO,priya.nair@example.com,1,6
+3,Vikram Rao,COO,vikram.rao@example.com,1,3
+4,Neha Kulkarni,CMO,neha.kulkarni@example.com,1,2
+5,Sanjay Iyer,CTO,sanjay.iyer@example.com,1,4
+6,Rohan Kapoor,Chief Revenue Officer,rohan.kapoor@example.com,1,1
+7,Meera Joshi,CHRO,meera.joshi@example.com,1,5
+8,Karan Malhotra,Sales Manager - North/East,karan.malhotra@example.com,6,1
+9,Divya Reddy,Sales Manager - South/West,divya.reddy@example.com,6,1
+10,Ishaan Verma,Marketing Manager,ishaan.verma@example.com,4,2
+11,Ananya Das,FP&A Manager,ananya.das@example.com,2,6
+12,Rahul Sharma,Financial Analyst,rahul.sharma@example.com,11,6
+13,Pooja Menon,Tech Lead,pooja.menon@example.com,5,4
+14,Arjun Bhat,Operations Manager,arjun.bhat@example.com,3,3
+15,Sneha Pillai,HR Business Partner,sneha.pillai@example.com,7,5

@@ -1,0 +1,7 @@
+DepartmentKey,DepartmentName,CostCenterCode,HeadEmployeeKey
+1,Sales,CC100,6
+2,Marketing,CC200,4
+3,Operations,CC300,3
+4,Technology,CC400,5
+5,HR,CC500,7
+6,Finance,CC600,2
