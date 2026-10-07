@@ -1,0 +1,24 @@
+Hierchey-----------------
+In DimEmployee, add these calculated columns (Modeling > New column):
+Path = PATH ( DimEmployee[EmployeeID], DimEmployee[ManagerID] )
+ 
+Level = PATHLENGTH ( DimEmployee[Path] )
+ 
+Level 1 = LOOKUPVALUE ( DimEmployee[EmployeeName], DimEmployee[EmployeeID],
+          PATHITEM ( DimEmployee[Path], 1, INTEGER ) )
+ 
+Level 2 = LOOKUPVALUE ( DimEmployee[EmployeeName], DimEmployee[EmployeeID],
+          PATHITEM ( DimEmployee[Path], 2, INTEGER ) )
+ 
+Level 3 = LOOKUPVALUE ( DimEmployee[EmployeeName], DimEmployee[EmployeeID],
+          PATHITEM ( DimEmployee[Path], 3, INTEGER ) )
+
+Roles-------------------
+HierarchyAccess
+PATHCONTAINS (
+    DimEmployee[Path],
+    LOOKUPVALUE ( DimEmployee[EmployeeKey],
+                  DimEmployee[Email], USERPRINCIPALNAME () )
+)
+
+FinanceAll

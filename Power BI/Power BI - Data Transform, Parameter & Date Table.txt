@@ -1,0 +1,23 @@
+Data Load & Parameter-----------
+1.	Power BI Desktop > Get Data > SQL Server (or Azure SQL Database). Use Import mode.
+2.	In Power Query (Transform Data) create two parameters, Server and Database (Text). Parameters let a deployment pipeline switch environments later.
+Sample 
+let
+    Source = Sql.Databases(Server),
+    dbreport = Source{[Name=Database]}[Data],
+    fpa_DimAccount = dbreport{[Schema="fpa",Item="DimAccount"]}[Data]
+in
+    fpa_DimAccount
+
+Date Table---------------
+Go to Modeling > New table and paste the following:
+Date = CALENDAR ( DATE ( 2024, 1, 1 ), DATE ( 2026, 12, 31 ) )
+Month Num = month('Date'[Date])
+Year = year('Date'[Date])
+Quarter = QUARTER('Date'[Date])
+Month Name = format('Date'[Date],"MMMM")
+Year Month = format('Date'[Date],"yyyy-mm")
+Month Strat = DATE ( YEAR ( 'Date'[Date] ), MONTH ( 'Date'[Date] ), 1 )
+IsActualMonth = IF ( [Date] <= DATE ( 2026, 9, 30 ), 1, 0 )
+
+

@@ -1,0 +1,35 @@
+Actual = SUM ( FactActuals[Amount] )
+ 
+Budget = SUM ( FactBudget[Amount] )
+ 
+Budget Comp = CALCULATE ( [Budget], 'Date'[IsActualMonth] = 1 )
+ 
+Variance = [Actual] - [Budget Comp]
+ 
+Variance % = DIVIDE ( [Variance], [Budget Comp] )
+ 
+Variance (Fav/Unfav) =
+SUMX ( DimAccount, DimAccount[Sign] * ( [Actual] - [Budget Comp] ) )
+ 
+Variance Status =
+IF ( [Variance (Fav/Unfav)] >= 0, "Favorable", "Unfavorable" )
+ 
+Actual YTD = TOTALYTD ( [Actual], 'Date'[Date] )
+ 
+Budget YTD = TOTALYTD ( [Budget Comp], 'Date'[Date] )
+ 
+Variance YTD = [Actual YTD] - [Budget YTD]
+ 
+Actual PY = CALCULATE ( [Actual], SAMEPERIODLASTYEAR ( 'Date'[Date] ) )
+ 
+YoY % = DIVIDE ( [Actual] - [Actual PY], [Actual PY] )
+ 
+Actual Rolling 12M =
+CALCULATE ( [Actual],
+    DATESINPERIOD ( 'Date'[Date], MAX ( 'Date'[Date] ), -12, MONTH ) )
+ 
+Budget Accuracy % =
+VAR AbsErr =
+    SUMX ( VALUES ( 'Date'[YearMonth] ),
+           ABS ( [Actual] - [Budget Comp] ) )
+RETURN 1 - DIVIDE ( AbsErr, [Budget Comp] )
