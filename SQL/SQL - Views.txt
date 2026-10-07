@@ -1,0 +1,36 @@
+-- View 1: budget vs actual with window functions
+CREATE OR ALTER VIEW fpa.vw_MonthlyVariance AS
+WITH bud AS (
+  SELECT MonthStart, DepartmentKey, AccountKey, SUM(Amount) AS Budget
+  FROM fpa.FactBudget GROUP BY MonthStart, DepartmentKey, AccountKey),
+act AS (
+  SELECT MonthStart, DepartmentKey, AccountKey, SUM(Amount) AS Actual
+  FROM fpa.FactActuals GROUP BY MonthStart, DepartmentKey, AccountKey)
+SELECT b.MonthStart, b.DepartmentKey, b.AccountKey, b.Budget,
+  ISNULL(a.Actual,0) AS Actual,
+  ISNULL(a.Actual,0) - b.Budget AS Variance,
+  (ISNULL(a.Actual,0) - b.Budget) / NULLIF(b.Budget,0) AS VariancePct,
+  SUM(ISNULL(a.Actual,0)) OVER (
+      PARTITION BY YEAR(b.MonthStart), b.DepartmentKey, b.AccountKey
+      ORDER BY b.MonthStart) AS YTD_Actual,
+  LAG(a.Actual,12) OVER (
+      PARTITION BY b.DepartmentKey, b.AccountKey
+      ORDER BY b.MonthStart) AS PY_Actual
+FROM bud b
+LEFT JOIN act a ON a.MonthStart=b.MonthStart
+               AND a.DepartmentKey=b.DepartmentKey
+               AND a.AccountKey=b.AccountKey;
+
+ 
+-- View 2: recursive CTE walking the employee hierarchy
+CREATE OR ALTER VIEW fpa.vw_EmployeeHierarchy AS
+WITH h AS (
+  SELECT EmployeeKey, EmployeeName, ManagerKey, 1 AS Lvl,
+         CAST(EmployeeName AS VARCHAR(500)) AS NamePath
+  FROM fpa.DimEmployee WHERE ManagerKey IS NULL
+  UNION ALL
+  SELECT e.EmployeeKey, e.EmployeeName, e.ManagerKey, h.Lvl + 1,
+         CAST(h.NamePath + ' > ' + e.EmployeeName AS VARCHAR(500))
+  FROM fpa.DimEmployee e JOIN h ON e.ManagerKey = h.EmployeeKey)
+SELECT * FROM h;
+

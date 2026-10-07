@@ -1,0 +1,53 @@
+CREATE SCHEMA fpa;
+
+ 
+CREATE TABLE fpa.DimEmployee (
+    EmployeeID   INT NOT NULL PRIMARY KEY,
+    EmployeeName  VARCHAR(60),
+    JobTitle      VARCHAR(50),
+    Email         VARCHAR(100),
+    ManagerID    INT NULL,          -- NULL for the CEO (top of hierarchy)
+    DepartmentID INT);
+ 
+CREATE TABLE fpa.DimDepartment (
+    DepartmentID   INT NOT NULL PRIMARY KEY,
+    DepartmentName  VARCHAR(50),
+    CostCenterCode  VARCHAR(10),
+    HeadEmployeeID INT NULL);       -- links department to its owner
+ 
+CREATE TABLE fpa.DimAccount (
+    AccountID   INT NOT NULL PRIMARY KEY,
+    AccountName  VARCHAR(50),
+    AccountGroup VARCHAR(20),
+    [Sign]       INT);               -- +1 revenue, -1 cost
+ 
+CREATE TABLE fpa.DimRegion (
+    RegionID  INT NOT NULL PRIMARY KEY,
+    RegionName VARCHAR(20));
+ 
+CREATE TABLE fpa.FactBudget (
+    MonthStart    DATE NOT NULL,
+    DepartmentID INT NOT NULL REFERENCES fpa.DimDepartment,
+    AccountID    INT NOT NULL REFERENCES fpa.DimAccount,
+    RegionID     INT NOT NULL REFERENCES fpa.DimRegion,
+    Amount        DECIMAL(18,2));
+ 
+CREATE TABLE fpa.FactActuals (
+    MonthStart    DATE NOT NULL,
+    DepartmentID INT NOT NULL REFERENCES fpa.DimDepartment,
+    AccountID    INT NOT NULL REFERENCES fpa.DimAccount,
+    RegionID     INT NOT NULL REFERENCES fpa.DimRegion,
+    Amount        DECIMAL(18,2));
+ 
+-- Used only for the performance-tuning exercise
+CREATE TABLE fpa.FactTransaction (
+    TxnID         INT NOT NULL PRIMARY KEY,
+    TxnDate       DATE,
+    DepartmentID INT,
+    AccountID    INT,
+    RegionID     INT,
+    Amount        DECIMAL(18,2));
+
+
+
+

@@ -1,0 +1,47 @@
+Data Insert---------------------------
+insert into fpa.dimaccount(AccountID, AccountName, AccountGroup, Sign)
+select AccountKey, AccountName, AccountGroup, Sign from dbo.dimaccount
+
+
+INSERT INTO fpa.DimEmployee (EmployeeID, EmployeeName, JobTitle, Email, ManagerID, DepartmentID)
+SELECT EmployeeKey, EmployeeName, JobTitle, Email,ManagerKey,DepartmentKey
+FROM dbo.DimEmployee;
+
+
+INSERT INTO fpa.DimRegion (RegionID, RegionName)
+SELECT RegionKey, RegionName
+FROM dbo.DimRegion;
+
+
+INSERT INTO fpa.DimDepartment (DepartmentID, DepartmentName, CostCenterCode, HeadEmployeeID)
+SELECT DepartmentKey, DepartmentName, CostCenterCode, HeadEmployeeKey
+FROM dbo.DimDepartment;
+
+
+INSERT INTO fpa.FactBudget (MonthStart, DepartmentID, AccountID, RegionID, Amount)
+SELECT CAST(MonthStart AS DATE), DepartmentKey, AccountKey, RegionKey, CAST(Amount AS DECIMAL(18,2))
+FROM dbo.FactBudget;
+
+INSERT INTO fpa.FactActuals (MonthStart, DepartmentID, AccountID, RegionID, Amount)
+SELECT CAST(MonthStart AS DATE), DepartmentKey, AccountKey, RegionKey, CAST(Amount AS DECIMAL(18,2))
+FROM dbo.FactActuals;
+
+INSERT INTO fpa.FactTransaction (TxnID, TxnDate, DepartmentID, AccountID, RegionID, Amount)
+SELECT TxnID, CAST(TxnDate AS DATE), DepartmentKey, AccountKey, RegionKey, CAST(Amount AS DECIMAL(18,2))
+FROM dbo.FactTransaction;
+
+SELECT * FROM fpa.DimEmployee;
+SELECT * FROM fpa.DimDepartment;
+SELECT * FROM fpa.DimAccount;
+SELECT * FROM fpa.DimRegion;
+SELECT TOP 10 * FROM fpa.FactBudget;
+SELECT TOP 10 * FROM fpa.FactActuals;
+
+Data Validation--------------------------
+SELECT 'DimEmployee' AS TableName, COUNT(*) AS Rows FROM fpa.DimEmployee UNION ALL
+SELECT 'DimDepartment', COUNT(*) FROM fpa.DimDepartment UNION ALL
+SELECT 'DimAccount',    COUNT(*) FROM fpa.DimAccount UNION ALL
+SELECT 'DimRegion',     COUNT(*) FROM fpa.DimRegion UNION ALL
+SELECT 'FactBudget',    COUNT(*) FROM fpa.FactBudget UNION ALL
+SELECT 'FactActuals',   COUNT(*) FROM fpa.FactActuals UNION ALL
+SELECT 'FactTransaction', COUNT(*) FROM fpa.FactTransaction;

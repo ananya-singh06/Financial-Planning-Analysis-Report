@@ -1,0 +1,26 @@
+-- Stored procedure: top variance drivers for a period
+CREATE OR ALTER PROCEDURE fpa.usp_TopVarianceDrivers
+  @FromDate DATE, @ToDate DATE, @TopN INT = 10
+AS
+BEGIN
+  SET NOCOUNT ON;
+  WITH agg AS (
+    SELECT d.DepartmentName, ac.AccountName,
+           SUM(v.Actual) AS Actual, SUM(v.Budget) AS Budget,
+           SUM(v.Actual - v.Budget) AS Variance
+    FROM fpa.vw_MonthlyVariance v
+    JOIN fpa.DimDepartment d ON d.DepartmentKey = v.DepartmentKey
+    JOIN fpa.DimAccount ac   ON ac.AccountKey   = v.AccountKey
+    WHERE v.MonthStart BETWEEN @FromDate AND @ToDate AND v.Actual <> 0
+    GROUP BY d.DepartmentName, ac.AccountName),
+  ranked AS (
+    SELECT *, RANK() OVER (ORDER BY ABS(Variance) DESC) AS rnk FROM agg)
+  SELECT * FROM ranked WHERE rnk <= @TopN ORDER BY rnk;
+END;
+
+
+
+CREATE INDEX IX_Txn_Date
+  ON fpa.FactTransaction (TxnDate)
+  INCLUDE (DepartmentKey, Amount);
+
